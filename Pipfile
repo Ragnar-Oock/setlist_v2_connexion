@@ -5,6 +5,8 @@ name = "pypi"
 
 [packages]
 connexion = {extras = ["swagger-ui"], version = "*"}
+pony = "*"
+psycopg2 = "*"
 
 [dev-packages]
 
