@@ -1,0 +1,734 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0-oas3
+  title: Setlist API
+  description: This is the specification of the Setlist V2 project's API.
+  contact:
+    name: Ragnar_oock
+    email: u.drgnk@outlook.com
+security:
+  - apiKey: []
+paths:
+  /songs:
+    get:
+      summary: list all available songs
+      operationId: songs.get
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Song'
+              examples:
+                example-1:
+                  value:
+                    status: 200
+                    data:
+                      - name: Be Like That
+                        artist: 3 Doors Down
+                        album: Away from the Sun
+                        vocals: true
+                        length: 158.5
+                        official: true
+                        showlight: true
+                        update_date: 17898797897
+                        custom_class: shinny
+                        arrangement:
+                          - name: Bass
+                            type: bass
+                            tunning: Drop D
+                            capo: 0
+                        tags:
+                          - name: Officielle
+                            color: 00cc00
+                        metadata:
+                          playable: nope
+                          I am groot: I am blue
+        '416':
+          description: Requested Range Not Satisfiable
+        '422':
+          description: Unprocessable entity
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/padding'
+        - name: orderby
+          in: query
+          required: false
+          schema:
+            type: string
+            default: 'artist,name'
+          description: |
+            A coma separated list of field used by the order by method to sort the result set. **This parameter is incompatible with `seed`.**
+        - name: seed
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            The seed used to have a consistent shuffle across paginated queries. **This parameter is incompatible with `orderby`.**
+      description: Return a list of song
+      tags:
+        - public
+    put:
+      summary: Add a list of songs
+      description: Add the provided songs to the database
+      operationId: songs.put
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorised
+      requestBody:
+        description: List of songs to be added.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PutSong'
+      tags:
+        - private
+    delete:
+      summary: Delete a list of songs
+      description: Remove song from the database based on the provided ids
+      operationId: songs.delete
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorised
+      parameters:
+        - name: ids
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/UUID'
+            uniqueItems: true
+            minItems: 1
+          description: ids of songs to be deleted
+          required: true
+      tags:
+        - private
+    parameters: []
+  /songs/list-id:
+    get:
+      summary: list all ids
+      description: 'list the id of each song present in the database, used by the bot to check for updates'
+      operationId: songs.list_id.get
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UUID'
+        '401':
+          description: Unauthorised
+      tags:
+        - private
+    parameters: []
+  /songs/{song}/interpretations:
+    get:
+      summary: list all interpretations of a given song
+      operationId: songs.interpretations.get
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Interpretation'
+        '416':
+          description: Requested Range Not Satisfiable
+        '422':
+          description: Unprocessable entity
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/padding'
+        - name: orderby
+          in: query
+          required: false
+          schema:
+            type: string
+            default: 'artist,name'
+          description: |
+            A coma separated list of field used by the order by method to sort the result set. **This parameter is incompatible with `seed`.**
+      description: Return the list of all registered interpretations of a given song
+      tags:
+        - public
+    put:
+      summary: add an interpretation to the given song
+      operationId: songs.interpretations.put
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorised
+      parameters:
+        - in: query
+          name: score
+          required: true
+          schema:
+            type: number
+            minimum: 0
+            maximum: 100
+          description: The score to be saved for this interpretation.
+          example: 86
+      description: Add an interpretation to the given song
+      tags:
+        - private
+    parameters:
+      - in: path
+        name: song
+        required: true
+        schema:
+          type: string
+        description: The id of the song to be referenced in the interpretation.
+        example: 001ba8d0b026815095afdc18fbc72e5ce8a7b45f615d7f831f713029a693a211
+  /search:
+    get:
+      summary: search for songs
+      operationId: search.get
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Song'
+        '416':
+          description: Requested Range Not Satisfiable
+        '422':
+          description: Unprocessable entity
+      parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/padding'
+        - name: orderby
+          in: query
+          required: false
+          schema:
+            type: string
+            default: 'artist,name,similarity'
+          description: |
+            A coma separated list of field used by the order by method to sort the result set. `similarity` is the metric that compare the search string and the results. **This parameter is incompatible with `seed`.**
+        - name: seed
+          in: query
+          required: false
+          schema:
+            type: string
+          description: |
+            The seed used to have a consistent shuffle across paginated queries. **This parameter is incompatible with `orderby`.**
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 'A string to performe fuzzy search accross the `name`, `artist` and `album` fields.'
+        - name: lastInterpretation
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+              minimum: 0
+              maximum: 100
+            minItems: 2
+            maxItems: 2
+            default:
+              - 0
+              - 100
+          description: 'Range of days, relative to current day, during which the researched song was last played. **100** as the upper bound means **anytime**.'
+        - name: interpretationNumber
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+              minimum: 0
+              maximum: 100
+            minItems: 2
+            maxItems: 2
+            default:
+              - 0
+              - 100
+            example:
+              - 35
+              - 100
+          description: Number of time the researched song was played. **100** as the upper bound means **no limit**.
+        - name: score
+          in: query
+          schema:
+            type: array
+            items:
+              type: number
+              minimum: 0
+              maximum: 100
+            minItems: 2
+            maxItems: 2
+            default:
+              - 0
+              - 100
+            example:
+              - 56.4
+              - 65.23
+          description: Range of scores to find the researched song in.
+        - name: showlight
+          in: query
+          schema:
+            type: boolean
+          allowEmptyValue: true
+          description: Does the researched song have light effects.
+        - name: vocals
+          in: query
+          schema:
+            type: boolean
+          allowEmptyValue: true
+          description: Does the researched song display the lyrics.
+        - name: odlc
+          in: query
+          schema:
+            type: boolean
+          description: Is the reserched song an official one.
+        - name: arrangements
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - lead
+                - rhythm
+                - combo
+                - bass
+      tags:
+        - public
+      description: Search for a list of song based on various parameters
+    parameters: []
+  /search/suggestions:
+    get:
+      summary: search suggestion for the quicksearch field
+      operationId: search.suggestion.get
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                  data:
+                    type: object
+                    properties:
+                      song:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/SongSuggestion'
+                      artist:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ArtistSuggestion'
+        '422':
+          description: Unprocessable entity
+      parameters:
+        - name: search
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 'A string to performe exact search accross the `name`, `artist` and `album` fields.'
+        - name: lastInterpretation
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+              minimum: 0
+              maximum: 100
+            minItems: 2
+            maxItems: 2
+            default:
+              - 0
+              - 100
+          description: 'Range of days, relative to current day, during which the researched song was last played. **100** as the upper bound means **anytime**.'
+        - name: interpretationNumber
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+              minimum: 0
+              maximum: 100
+            minItems: 2
+            maxItems: 2
+            default:
+              - 0
+              - 100
+            example:
+              - 35
+              - 100
+          description: Number of time the researched song was played. **100** as the upper bound means **no limit**.
+        - name: score
+          in: query
+          schema:
+            type: array
+            items:
+              type: number
+              minimum: 0
+              maximum: 100
+            minItems: 2
+            maxItems: 2
+            default:
+              - 0
+              - 100
+            example:
+              - 56.4
+              - 65.23
+          description: Range of scores to find the researched song in.
+        - name: showlight
+          in: query
+          schema:
+            type: boolean
+          allowEmptyValue: true
+          description: Does the researched song have light effects.
+        - name: vocals
+          in: query
+          schema:
+            type: boolean
+          allowEmptyValue: true
+          description: Does the researched song display the lyrics.
+        - name: odlc
+          in: query
+          schema:
+            type: boolean
+          description: Is the reserched song an official one.
+        - name: arrangements
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - lead
+                - rhythm
+                - combo
+                - bass
+      tags:
+        - public
+      description: 'Return search suggestions matchin the song title, album name or artist name provided.'
+    parameters: []
+servers:
+  - url: 'http://localhost:5000/api/v1'
+    description: developpement server
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+  schemas:
+    Song:
+      type: object
+      x-examples:
+        Song sample:
+          name: Be Like That
+          artist: 3 Doors Down
+          album: Away from the Sun
+          vocals: true
+          length: 158.5
+          official: true
+          showlight: true
+          update_date: 17898797897
+          custom_class: shinny
+          arrangement:
+            - name: Bass
+              type: bass
+              tunning: Drop D
+              capo: 0
+          tags:
+            - name: Officielle
+              color: 00cc00
+          metadata:
+            playable: nope
+            I am groot: I am blue
+      description: A song item as returned by the /song or /search endpoints
+      properties:
+        name:
+          type: string
+          example: Be Like That
+        artist:
+          type: string
+          example: 3 Doors Down
+        album:
+          type: string
+          example: Away from the Sun
+        vocals:
+          type: boolean
+        length:
+          type: number
+          example: 158.5
+        official:
+          type: boolean
+        showlight:
+          type: boolean
+        update_date:
+          type: integer
+          example: 17898797897
+        custom_class:
+          type: string
+          example: shinny
+          description: custom CSS class to be applied to the card of a song on the UI
+        arrangement:
+          type: array
+          items:
+            $ref: '#/components/schemas/Arrangement'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            playable: nope
+            I am groot: I am blue
+    UUID:
+      type: string
+      example: 001ba8d0b026815095afdc18fbc72e5ce8a7b45f615d7f831f713029a693a211
+      description: a song unique identifier
+    PutSong:
+      type: object
+      properties:
+        uuid:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+          example: Be Like That
+        artist:
+          type: string
+          example: 3 Doors Down
+        album:
+          type: string
+          example: Away from the Sun
+        vocals:
+          type: boolean
+        length:
+          type: number
+          example: 158.5
+        official:
+          type: boolean
+        showlights:
+          type: boolean
+        update_date:
+          type: integer
+          example: 17898797897
+        custom_class:
+          type: string
+          example: shinny
+        arrangements:
+          type: array
+          items:
+            $ref: '#/components/schemas/PutArrangement'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            playable: nope
+            I am groot: I am blue
+      x-examples:
+        example-1:
+          uuid: 001ba8d0b026815095afdc18fbc72e5ce8a7b45f615d7f831f713029a693a211
+          name: Be Like That
+          artist: 3 Doors Down
+          album: Away from the Sun
+          vocals: true
+          length: 158.5
+          official: true
+          showlight: true
+          update_date: 17898797897
+          custom_class: shinny
+          arrangement:
+            - name: Lead
+              type: lead
+              tunning:
+                - -2
+                - 0
+                - 0
+                - 0
+                - -2
+                - -2
+              capo: 0
+          tags:
+            - name: Officielle
+              color: 00cc00
+          metadata:
+            playable: nope
+            I am groot: I am blue
+    Arrangement:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Bass
+        type:
+          type: string
+          enum:
+            - lead
+            - bass
+            - rhythm
+          example: bass
+        tunning:
+          type: string
+          example: Drop D
+        capo:
+          type: integer
+          format: int32
+          example: 0
+    PutArrangement:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Lead
+        type:
+          type: string
+          enum:
+            - lead
+            - bass
+            - rhythm
+          example: lead
+        tuning:
+          type: array
+          items:
+            type: integer
+            format: int32
+          minItems: 6
+          maxItems: 6
+          example:
+            - -2
+            - 0
+            - 0
+            - 0
+            - -2
+            - -2
+        capo:
+          type: integer
+          format: int32
+          example: 3
+    Tag:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Officielle
+        color:
+          type: string
+          pattern: '^[0-9A-Fa-f]{6}|[0-9A-Fa-f]{3}$'
+          example: 00cc00
+          minLength: 3
+          maxLength: 6
+    Interpretation:
+      type: object
+      properties:
+        song:
+          $ref: '#/components/schemas/UUID'
+        score:
+          type: number
+          minimum: 0
+          maximum: 100
+          example: 86.35
+          description: score in percent with two decimal places
+        time:
+          type: integer
+          format: int64
+          example: 17898797897
+          description: timestamp of the interpretation
+    SongSuggestion:
+      type: object
+      properties:
+        name:
+          type: string
+          example: A Call To Sincerity
+        album:
+          type: string
+          example: Foundations
+        artist:
+          type: string
+          example: Mayhem
+      description: A song item as returned by the /search/suggestion endpoint
+    ArtistSuggestion:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Mayhem
+  parameters:
+    limit:
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 50
+      description: The number of items to return.
+    padding:
+      in: query
+      name: padding
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+      description: The number of items to skip before starting to collect the result set.
+tags:
+  - name: public
+  - name: private
