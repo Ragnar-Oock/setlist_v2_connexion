@@ -1,5 +1,4 @@
 from pony import orm
+from settings import db_params
 
-
-class Model:
-    db = orm.Database()
+db = orm.Database(**db_params)
