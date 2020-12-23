@@ -7,6 +7,9 @@ name = "pypi"
 connexion = {extras = ["swagger-ui"], version = "*"}
 pony = "*"
 psycopg2 = "*"
+python-dotenv = "*"
+requests = "*"
+flask = "*"
 
 [dev-packages]
 
