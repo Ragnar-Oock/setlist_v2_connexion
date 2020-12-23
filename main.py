@@ -11,9 +11,9 @@ app.add_api(
     resolver=FixedRestyResolver('endpoints'),
 
 )
-app.run(port=8080)
 # add pony wrapper on flask views
-Pony(app)
+Pony(app.app)
+app.run(port=8080, host='localhost')
 
 orm.set_sql_debug(True)
 Model.db.bind(**db_params)
