@@ -1,9 +1,9 @@
 def get(limit, padding, orderby, seed):
-    print(limit, padding, orderby, seed)
-    return 'some message'
+    return 'prout'
 
 
-def put():
+def put(body):
+    print(body)
     return 'im a put'
 
 
