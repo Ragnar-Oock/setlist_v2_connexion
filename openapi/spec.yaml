@@ -45,7 +45,7 @@ paths:
                         arrangement:
                           - name: Bass
                             type: bass
-                            tunning: Drop D
+                            tuning: Drop D
                             capo: 0
                         tags:
                           - name: Officielle
@@ -117,7 +117,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/UUID'
+              $ref: '#/components/schemas/id'
             uniqueItems: true
             minItems: 1
           description: ids of songs to be deleted
@@ -143,7 +143,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/UUID'
+                      $ref: '#/components/schemas/id'
         '401':
           description: Unauthorised
       tags:
@@ -485,7 +485,7 @@ components:
           arrangement:
             - name: Bass
               type: bass
-              tunning: Drop D
+              tuning: Drop D
               capo: 0
           tags:
             - name: Officielle
@@ -535,15 +535,20 @@ components:
           example:
             playable: nope
             I am groot: I am blue
-    UUID:
+        id:
+          $ref: '#/components/schemas/id'
+    id:
       type: string
       example: 001ba8d0b026815095afdc18fbc72e5ce8a7b45f615d7f831f713029a693a211
       description: a song unique identifier
+      title: ID
+      maxLength: 64
+      minLength: 64
     PutSong:
       type: object
       properties:
-        uuid:
-          $ref: '#/components/schemas/UUID'
+        id:
+          $ref: '#/components/schemas/id'
         name:
           type: string
           example: Be Like That
@@ -585,7 +590,7 @@ components:
             I am groot: I am blue
       x-examples:
         example-1:
-          uuid: 001ba8d0b026815095afdc18fbc72e5ce8a7b45f615d7f831f713029a693a211
+          id: 001ba8d0b026815095afdc18fbc72e5ce8a7b45f615d7f831f713029a693a211
           name: Be Like That
           artist: 3 Doors Down
           album: Away from the Sun
@@ -598,7 +603,7 @@ components:
           arrangement:
             - name: Lead
               type: lead
-              tunning:
+              tuning:
                 - -2
                 - 0
                 - 0
@@ -625,7 +630,7 @@ components:
             - bass
             - rhythm
           example: bass
-        tunning:
+        tuning:
           type: string
           example: Drop D
         capo:
@@ -679,7 +684,7 @@ components:
       type: object
       properties:
         song:
-          $ref: '#/components/schemas/UUID'
+          $ref: '#/components/schemas/id'
         score:
           type: number
           minimum: 0
