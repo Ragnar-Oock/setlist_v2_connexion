@@ -5,7 +5,8 @@ from settings import db_params
 import connexion
 from custom_resolver.resolvers import FixedRestyResolver
 
-app = connexion.FlaskApp(__name__, specification_dir='openapi/')
+
+app = connexion.FlaskApp(__name__, specification_dir='openapi/', debug=True)
 app.add_api(
     'spec.yaml',
     resolver=FixedRestyResolver('endpoints'),
