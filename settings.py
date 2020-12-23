@@ -1,8 +1,8 @@
 db_params = {
     'provider': 'postgres',
-    'user': 'postgress',
+    'user': 'postgres',
     'password': 'password',
     'host': 'localhost',
     'port': 5432,
-    'database': 'test'
+    'database': 'tests'
 }
