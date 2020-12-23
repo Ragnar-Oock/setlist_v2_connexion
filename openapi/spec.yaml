@@ -468,6 +468,12 @@ components:
       type: apiKey
       in: header
       name: X-API-KEY
+    twitchOauth:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: 'https://id.twitch.tv/oauth2/token'
+      description: twitch oauth2 client credential flow
   schemas:
     Song:
       type: object
