@@ -14,9 +14,9 @@ class Song(db.Entity):
     showlights = orm.Optional(bool, default=False)
     official = orm.Optional(bool, default=False)
     custom_class = orm.Optional(str, 255, default='')
+    metadata = orm.Optional(orm.Json)
 
     tags = orm.Set('Tag')
-    metadata = orm.Set('Meta')
     arrangements = orm.Set('Arrangement')
     interpretations = orm.Set('Interpretation')
 
