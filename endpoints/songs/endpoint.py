@@ -58,5 +58,12 @@ def put(body):
     return 'im a put'
 
 
-def delete():
-    return 'bite'
+def delete(ids):
+    try:
+        for song_id in ids:
+            Song[song_id].delete()
+        # return 204 sucess no content response
+        return '', 204
+    # prevent error if a record to be deleted is missing
+    except orm.core.ObjectNotFound:
+        return '', 204
