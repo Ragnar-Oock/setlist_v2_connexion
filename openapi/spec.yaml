@@ -7,7 +7,7 @@ info:
     name: Ragnar_oock
     email: u.drgnk@outlook.com
 security:
-  - apiKey: []
+  - twitchOauth: []
 paths:
   /songs:
     get:
