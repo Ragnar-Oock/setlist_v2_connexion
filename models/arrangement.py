@@ -8,3 +8,11 @@ class Arrangement(db.Entity):
     type = orm.Required(str, 255)
     tuning = orm.Required("Tuning")
     capo = orm.Optional(int, default=0)
+
+    def serialize(self):
+        return {
+            "name": self.name,
+            "type": self.type,
+            "tuning": self.tuning.name,
+            "capo": self.capo
+        }
