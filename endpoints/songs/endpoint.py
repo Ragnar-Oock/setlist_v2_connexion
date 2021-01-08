@@ -1,60 +1,23 @@
-from models import Song, Arrangement
+from pony import orm
+from models import Song
 from flask import jsonify
-import json
+from models.core import db
 
 
 def get(limit, padding, orderby, seed):
     song_list = Song.select()
-    q = {'data': [s.to_dict() for s in song_list]}
+    q = {'data': [s.serialize() for s in song_list]}
     return jsonify(q)
-    # return 'prout'
 
 
 def put(body):
-    print(body)
-    songs = json.load(body)
-    new_songs = []
-    try:
-        for song in songs:
-            new_song = Song(
-                id=song['id'],
-                name=song['name'],
-                artist=song['artist'],
-                album=song['album'],
-                vocals=song['vocals']
-            )
-            if song['length']:
-                new_song.length = song['length']
-            if song['update_date']:
-                new_song.update_date = song['update_date']
-            if song['showlights']:
-                new_song.showlights = song['showlights']
-            if song['official']:
-                new_song.official = song['official']
-            if song['custom_class']:
-                new_song.custom_class = song['custom_class']
-            if song['arrangements']:
-                arrangement_list = []
-                for arrangement in song['arrangements']:
-                    new_arrangement = Arrangement(
-                        song=new_song,
-                        name=arrangement['name'],
-                        type=arrangement['type'],
-                        tuning=arrangement['tuning']
-                    )
-                    if arrangement['capo']:
-                        new_arrangement.capo = arrangement['capo']
-                    arrangement_list.append(new_arrangement)
-                new_song.arrangements = arrangement_list
-            if song['tags']:
-                pass
-                # TODO: implement get or create tag
-                # tag_list = []
-                # for tag in song['tag']:
-                #     new_tag = Tag
+    for song in body:
+        try:
+            Song.add_entry(song)
+            db.flush()
+        except Exception:
+            return ['prout'], 400
 
-    except Exception as e:
-        print(e)
     return 'im a put'
 
 
