@@ -572,38 +572,8 @@ components:
             $ref: '#/components/schemas/Tag'
         metadata:
           type: object
-          additionalProperties:
-            type: string
+          additionalProperties: {}
           example:
-            playable: nope
-            I am groot: I am blue
-      x-examples:
-        example-1:
-          id: 001ba8d0b026815095afdc18fbc72e5ce8a7b45f615d7f831f713029a693a211
-          name: Be Like That
-          artist: 3 Doors Down
-          album: Away from the Sun
-          vocals: true
-          length: 158.5
-          official: true
-          showlight: true
-          update_date: 17898797897
-          custom_class: shinny
-          arrangement:
-            - name: Lead
-              type: lead
-              tuning:
-                - -2
-                - 0
-                - 0
-                - 0
-                - -2
-                - -2
-              capo: 0
-          tags:
-            - name: Officielle
-              color: 00cc00
-          metadata:
             playable: nope
             I am groot: I am blue
     Arrangement:
