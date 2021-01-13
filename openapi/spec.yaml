@@ -166,8 +166,17 @@ paths:
           in: query
           required: false
           schema:
-            type: string
-            default: 'artist,name'
+            type: array
+            default:
+              - artist
+              - name
+            items:
+              type: string
+              enum:
+                - name
+                - album
+                - artist
+                - update_date
           description: |
             A coma separated list of field used by the order by method to sort the result set. **This parameter is incompatible with `seed`.**
       description: Return the list of all registered interpretations of a given song
