@@ -60,25 +60,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/padding'
-        - name: orderby
-          in: query
-          required: false
-          schema:
-            type: array
-            default: [artist, name]
-            items:
-              type: string
-              enum: [ name, album, artist, update_date ]
-          description: |
-            A coma separated list of field used by the order by method to sort the result set. **This parameter is incompatible with `seed`.**
-          style: form
-        - name: seed
-          in: query
-          required: false
-          schema:
-            type: string
-          description: |
-            The seed used to have a consistent shuffle across paginated queries. **This parameter is incompatible with `orderby`.**
+        - $ref: '#/components/parameters/orderby'
+        - $ref: '#/components/parameters/seed'
       description: Return a list of song
       tags:
         - public
@@ -247,21 +230,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/padding'
-        - name: orderby
-          in: query
-          required: false
-          schema:
-            type: string
-            default: 'artist,name,similarity'
-          description: |
-            A coma separated list of field used by the order by method to sort the result set. `similarity` is the metric that compare the search string and the results. **This parameter is incompatible with `seed`.**
-        - name: seed
-          in: query
-          required: false
-          schema:
-            type: string
-          description: |
-            The seed used to have a consistent shuffle across paginated queries. **This parameter is incompatible with `orderby`.**
+        - $ref: '#/components/parameters/orderby'
+        - $ref: '#/components/parameters/seed'
         - name: search
           in: query
           required: false
@@ -744,6 +714,33 @@ components:
         minimum: 0
         default: 0
       description: The number of items to skip before starting to collect the result set.
+    orderby:
+      in: query
+      name: orderby
+      required: false
+      schema:
+        type: array
+        default:
+          - artist
+          - name
+        items:
+          type: string
+          enum:
+            - name
+            - album
+            - artist
+            - update_date
+      description: |
+        A coma separated list of field used by the order by method to sort the result set. **This parameter is incompatible with `seed`.**
+      style: form
+    seed:
+      name: seed
+      in: query
+      required: false
+      schema:
+        type: string
+      description: |
+        The seed used to have a consistent shuffle across paginated queries. **This parameter is incompatible with `orderby`.**
 tags:
   - name: public
   - name: private
