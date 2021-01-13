@@ -14,6 +14,7 @@ def get_random_indeces(max_range: int, seed="seed", limit=50, padding=0) -> list
     """
     # initiate random seed
     random.seed(a=seed)
+    print(max_range)
 
     def phi(n: int) -> list:
         """
@@ -36,7 +37,7 @@ def get_random_indeces(max_range: int, seed="seed", limit=50, padding=0) -> list
         :return: a random coprime number of the length that can be used a step in the
         """
         p = phi(length)
-        return p[random.randint(0, len(p)-1)]
+        return p[random.randint(0, len(p) - 1)]
 
     # set offset from seed
     offset = random.randint(0, max_range)
@@ -47,7 +48,8 @@ def get_random_indeces(max_range: int, seed="seed", limit=50, padding=0) -> list
 
     # build list of random indeces
     indeces = []
-    for i in range(index, index + limit):
+    max_length = index + limit if index + limit < max_range else max_range
+    for i in range(index, max_length):
         indeces.append(((i * step + offset) % max_range) + 1)
 
     return indeces
