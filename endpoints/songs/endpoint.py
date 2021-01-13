@@ -21,21 +21,22 @@ def get(limit, padding, orderby, seed=None):
         # get songs based on the random indeces
         song_list = orm\
             .select(s for s in Song)\
-            .filter(lambda s: s.index in indeces)
+            .where(lambda s: s.index in indeces)
 
         # shuffle the list
         shuffle(list(song_list))
 
-    return {'data': [s.serialize() for s in song_list], "random_indeces": indeces}, 200
+    return {'data': [s.serialize() for s in song_list]}, 200
 
 
 def put(body):
     for song in body:
+        print(song)
         try:
             Song.add_entry(song)
         except Exception:
             orm.rollback()
-            return {"message": "failed to insert the song of id {id}"}, 400
+            return {"message": "failed to insert the song of id {}".format(song.get('id'))}, 400
 
     return {"message": "Sucssfully inserted {} songs".format(len(body))}, 200
 
