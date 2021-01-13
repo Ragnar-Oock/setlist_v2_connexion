@@ -92,8 +92,8 @@ paths:
       description: Remove song from the database based on the provided ids
       operationId: songs.delete
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
         '400':
           description: Bad request
         '401':
