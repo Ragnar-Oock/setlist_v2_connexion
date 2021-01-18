@@ -1,4 +1,8 @@
-def put():
+from models import Interpretation
+
+
+def put(song, score):
+    interpretation = Interpretation(song=song, score=score)
     return 'put interpretation'
 
 
