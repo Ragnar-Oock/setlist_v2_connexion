@@ -8,18 +8,23 @@ def get(limit, padding, orderby: list, search=None, lastInterpretation=None,
     orm.set_sql_debug(True)
     search_results = orm.select(s for s in Song)
 
+    # fuzzy search
     if search:
         search_results = search_results.where(orm.raw_sql('similarity("s"."fts_col", $search) > .1'))
+        # add similarity to the order by array
+        orderby.insert(0, '-similarity')
 
+    # does the song has showlights
     if showlights:
         search_results = search_results.where(lambda s: s.showlights == showlights)
 
-    if seed is None:
-        search_results = search_results \
-            .order_by(order_by[:-1]) \
-            .limit(limit=limit, offset=padding)
-    else:
-        indeces = get_random_indeces(orm.count(search_results), seed, limit, padding)
+    # does the song display lyrics
+    if vocals:
+        search_results = search_results.where(lambda s: s.vocals == vocals)
+
+    # is the song a odlc or a cdlc
+    if odlc is not None:
+        search_results = search_results.where(lambda s: s.official == odlc)
 
         # get songs based on the random indeces
         search_results = search_results \
