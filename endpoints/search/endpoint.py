@@ -1,10 +1,9 @@
 from pony import orm
 from models import Song
-from random import shuffle
-from utils.db import get_random_indeces
+from utils.db import format_order_by
 
 
-def get(limit, padding, orderby, seed=None, search=None, lastInterpretation=None,
+def get(limit, padding, orderby: list, search=None, lastInterpretation=None,
         interpretationNumber=None, score=None, showlights=None, vocals=None, odlc=None, arrangements=None):
     orm.set_sql_debug(True)
     search_results = orm.select(s for s in Song)
@@ -14,10 +13,6 @@ def get(limit, padding, orderby, seed=None, search=None, lastInterpretation=None
 
     if showlights:
         search_results = search_results.where(lambda s: s.showlights == showlights)
-
-    order_by = ''
-    for field in orderby:
-        order_by += 's.{field},'.format(field=field)
 
     if seed is None:
         search_results = search_results \
@@ -30,7 +25,9 @@ def get(limit, padding, orderby, seed=None, search=None, lastInterpretation=None
         search_results = search_results \
             .where(lambda s: s.index in indeces)
 
-        # shuffle the list
-        shuffle(list(search_results))
+    # apply order by, limit and padding
+    search_results = search_results \
+        .order_by(format_order_by(orderby)) \
+        .limit(limit=limit, offset=padding)
 
     return {'data': [s.serialize() for s in search_results]}, 200

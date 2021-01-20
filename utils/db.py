@@ -53,3 +53,23 @@ def get_random_indeces(max_range: int, seed="seed", limit=50, padding=0) -> list
         indeces.append(((i * step + offset) % max_range) + 1)
 
     return indeces
+
+
+def format_order_by(orderby: str) -> str:
+    order_by = ''
+    for field in orderby:
+        # is field DESC ?
+        if field[0] == '-':
+            field = field[1:]
+            pattern = 'orm.core.desc({field}),'
+        else:
+            pattern = '{field},'
+
+        # is field a real entity property ?
+        if field != 'similarity':
+            field = 's.{field}'.format(field=field)
+        else:
+            field = 'orm.raw_sql(\'similarity("s"."fts_col", $search)\')'
+
+        order_by += pattern.format(field=field)
+    return order_by[:-1]
