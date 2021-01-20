@@ -9,3 +9,10 @@ class Interpretation(db.Entity):
     song = orm.Required('Song')
     date = orm.Optional(datetime.datetime, default=datetime.datetime.now())
     score = orm.Required(Decimal, precision=4, scale=2)
+
+    def serialize(self):
+        return {
+            "song": self.song.id,
+            "date": self.date,
+            "score": self.score
+        }
