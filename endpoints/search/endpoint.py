@@ -26,9 +26,9 @@ def get(limit, padding, orderby: list, search=None, lastInterpretation=None,
     if odlc is not None:
         search_results = search_results.where(lambda s: s.official == odlc)
 
-        # get songs based on the random indeces
-        search_results = search_results \
-            .where(lambda s: s.index in indeces)
+    # does the song have certain arrangements
+    if arrangements:
+        search_results = search_results.where(lambda s: orm.JOIN(arrangements[0] in s.arrangements.type))
 
     # apply order by, limit and padding
     search_results = search_results \
