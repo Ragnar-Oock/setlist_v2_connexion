@@ -26,9 +26,22 @@ def get(limit, padding, orderby: list, search=None, lastInterpretation=None,
     if odlc is not None:
         search_results = search_results.where(lambda s: s.official == odlc)
 
+    # --- arrangement specific fields ---
     # does the song have certain arrangements
     if arrangements:
         search_results = search_results.where(lambda s: orm.JOIN(arrangements[0] in s.arrangements.type))
+
+    # --- interpretation specific fields ---
+    # how many times does the song was played
+    if interpretationNumber != [0, 100]:
+        lower_bound = min(interpretationNumber[0], interpretationNumber[1])
+        upper_bound = max(interpretationNumber[0], interpretationNumber[1])
+        print(lower_bound, ' - ', upper_bound)
+        search_results = search_results.where(
+            lambda s:
+                lower_bound <= orm.count(s.interpretations)
+                and (orm.count(s.interpretations) <= upper_bound or upper_bound >= 100)
+        )
 
     # apply order by, limit and padding
     search_results = search_results \
