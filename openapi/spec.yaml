@@ -504,7 +504,7 @@ components:
           type: boolean
         update_date:
           type: integer
-          example: 17898797897
+          example: 17898797
         custom_class:
           type: string
           example: shinny
@@ -535,6 +535,35 @@ components:
       minLength: 32
     PutSong:
       type: object
+      x-examples:
+        example-1:
+          id: 100e6b8187cb645af411b48c911e589f
+          name: Be Like That
+          artist: 3 Doors Down
+          album: Away from the Sun
+          vocals: true
+          length: 158.5
+          official: true
+          showlight: true
+          update_date: 17898797897
+          custom_class: shinny
+          arrangement:
+            - name: Lead
+              type: lead
+              tuning:
+                - -2
+                - 0
+                - 0
+                - 0
+                - -2
+                - -2
+              capo: 0
+          tags:
+            - name: Officielle
+              color: 00cc00
+          metadata:
+            playable: nope
+            I am groot: I am blue
       properties:
         id:
           $ref: '#/components/schemas/id'
