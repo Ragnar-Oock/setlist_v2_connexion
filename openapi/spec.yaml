@@ -295,7 +295,7 @@ paths:
               - 56.4
               - 65.23
           description: Range of scores to find the researched song in.
-        - name: showlight
+        - name: showlights
           in: query
           schema:
             type: boolean
