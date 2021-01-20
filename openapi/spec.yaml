@@ -240,7 +240,6 @@ paths:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/padding'
         - $ref: '#/components/parameters/orderby'
-        - $ref: '#/components/parameters/seed'
         - name: search
           in: query
           required: false
