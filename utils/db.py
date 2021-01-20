@@ -14,7 +14,6 @@ def get_random_indeces(max_range: int, seed="seed", limit=50, padding=0) -> list
     """
     # initiate random seed
     random.seed(a=seed)
-    print(max_range)
 
     def phi(n: int) -> list:
         """
