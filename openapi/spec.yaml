@@ -617,6 +617,7 @@ components:
             - lead
             - bass
             - rhythm
+            - alt
           example: bass
         tuning:
           type: string
@@ -637,6 +638,7 @@ components:
             - lead
             - bass
             - rhythm
+            - alt
           example: lead
         tuning:
           type: array
@@ -738,6 +740,10 @@ components:
             - album
             - artist
             - update_date
+            - -name
+            - -album
+            - -artist
+            - -update_date
       description: |
         A coma separated list of field used by the order by method to sort the result set. **This parameter is incompatible with `seed`.**
       style: form
