@@ -2,6 +2,7 @@ from pony import orm
 from models import Song
 from random import shuffle
 from utils.db import get_random_indeces
+from pony.orm.core import TransactionIntegrityError
 
 
 def get(limit, padding, orderby, seed=None):
@@ -33,10 +34,14 @@ def put(body):
     for song in body:
         try:
             Song.add_entry(song)
+        except TransactionIntegrityError as e:
+            orm.rollback()
+            print(e)
+            return {"message": "song of id {} already exists, aborting insert".format(song.get('id'))}, 400
         except Exception as e:
             orm.rollback()
             print(e)
-            return {"message": "failed to insert the song of id {}".format(song.get('id'))}, 400
+            return {"message": "failed to insert the song of id {}, unknown error".format(song.get('id'))}, 400
 
     return {"message": "Sucssfully inserted {} songs".format(len(body))}, 200
 
