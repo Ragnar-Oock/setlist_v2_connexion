@@ -528,11 +528,11 @@ components:
           $ref: '#/components/schemas/id'
     id:
       type: string
-      example: 001ba8d0b026815095afdc18fbc72e5ce8a7b45f615d7f831f713029a693a211
+      example: 100e6b8187cb645af411b48c911e589f
       description: a song unique identifier
       title: ID
-      maxLength: 64
-      minLength: 64
+      maxLength: 32
+      minLength: 32
     PutSong:
       type: object
       properties:
