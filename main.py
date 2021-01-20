@@ -1,6 +1,5 @@
 import connexion
 from dotenv import load_dotenv
-from pony import orm
 from pony.flask import Pony
 
 from custom_resolver.resolvers import FixedRestyResolver
@@ -19,5 +18,3 @@ app.add_api(
 # add pony wrapper on flask views
 Pony(app.app)
 app.run(port=8080, host='localhost')
-
-orm.set_sql_debug(True)
