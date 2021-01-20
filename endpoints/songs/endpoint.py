@@ -31,11 +31,11 @@ def get(limit, padding, orderby, seed=None):
 
 def put(body):
     for song in body:
-        print(song)
         try:
             Song.add_entry(song)
-        except Exception:
+        except Exception as e:
             orm.rollback()
+            print(e)
             return {"message": "failed to insert the song of id {}".format(song.get('id'))}, 400
 
     return {"message": "Sucssfully inserted {} songs".format(len(body))}, 200
