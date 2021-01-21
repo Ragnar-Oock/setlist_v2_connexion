@@ -168,17 +168,14 @@ paths:
           schema:
             type: array
             default:
-              - artist
-              - name
+              - date
             items:
               type: string
               enum:
-                - name
-                - album
-                - artist
-                - update_date
+                - date
+                - score
           description: |
-            A coma separated list of field used by the order by method to sort the result set. **This parameter is incompatible with `seed`.**
+            A coma separated list of field used by the order by method to sort the result set.
           style: form
       description: Return the list of all registered interpretations of a given song
       tags:
