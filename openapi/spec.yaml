@@ -320,6 +320,7 @@ paths:
                 - rhythm
                 - combo
                 - bass
+                - alt
       tags:
         - public
       description: Search for a list of song based on various parameters
@@ -615,6 +616,7 @@ components:
             - bass
             - rhythm
             - alt
+            - combo
           example: bass
         tuning:
           type: string
@@ -636,6 +638,7 @@ components:
             - bass
             - rhythm
             - alt
+            - combo
           example: lead
         tuning:
           type: array
