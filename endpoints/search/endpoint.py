@@ -1,6 +1,8 @@
 from pony import orm
 from models import Song
 from utils.db import format_order_by
+from datetime import timedelta, datetime
+from decimal import Decimal
 
 
 def get(limit, padding, orderby: list, search=None, lastInterpretation=None,
@@ -36,11 +38,31 @@ def get(limit, padding, orderby: list, search=None, lastInterpretation=None,
     if interpretationNumber != [0, 100]:
         lower_bound = min(interpretationNumber[0], interpretationNumber[1])
         upper_bound = max(interpretationNumber[0], interpretationNumber[1])
-        print(lower_bound, ' - ', upper_bound)
         search_results = search_results.where(
             lambda s:
-                lower_bound <= orm.count(s.interpretations)
-                and (orm.count(s.interpretations) <= upper_bound or upper_bound >= 100)
+            lower_bound <= orm.count(s.interpretations)
+            and (orm.count(s.interpretations) <= upper_bound or upper_bound >= 100)
+        )
+
+    if lastInterpretation != [0, 100]:
+        # higher bound in days to allow no maximum calculation when >=100
+        upper_bound = max(lastInterpretation[0], lastInterpretation[1])
+        # datetime bounds to be used in where clause
+        older_bound = datetime.now() - timedelta(days=max(lastInterpretation[0], lastInterpretation[1]))
+        youger_bound = datetime.now() - timedelta(days=min(lastInterpretation[0], lastInterpretation[1]))
+
+        search_results = search_results.where(
+            lambda s:
+            youger_bound > orm.max(s.interpretations.date)
+            and (orm.max(s.interpretations.date) <= older_bound or upper_bound >= 100)
+        )
+
+    if score != [0, 100]:
+        lower_bound = Decimal(min(score[0], score[1]))
+        upper_bound = Decimal(max(score[0], score[1]))
+        search_results = search_results.where(
+            lambda s:
+            lower_bound <= orm.max(s.interpretations.score) and orm.max(s.interpretations.score) <= upper_bound
         )
 
     # apply order by, limit and padding
