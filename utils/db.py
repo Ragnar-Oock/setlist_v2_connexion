@@ -54,7 +54,7 @@ def get_random_indeces(max_range: int, seed="seed", limit=50, padding=0) -> list
     return indeces
 
 
-def format_order_by(orderby: str) -> str:
+def format_order_by(orderby: str, alias='s') -> str:
     order_by = ''
     for field in orderby:
         # is field DESC ?
@@ -66,7 +66,7 @@ def format_order_by(orderby: str) -> str:
 
         # is field a real entity property ?
         if field != 'similarity':
-            field = 's.{field}'.format(field=field)
+            field = '{alias}.{field}'.format(alias=alias, field=field)
         else:
             field = 'orm.raw_sql(\'similarity("s"."fts_col", $search)\')'
 
