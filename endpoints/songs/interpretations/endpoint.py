@@ -1,9 +1,12 @@
 from models import Interpretation, Song
 from utils.db import format_order_by
+# needed for orderby
+# noinspection PyUnresolvedReferences
+from pony import orm
 
 
 def put(song, score):
-    interpretation = Interpretation(song=song, score=score)
+    Interpretation(song=song, score=score)
     # return succes no content
     return '', 204
 
