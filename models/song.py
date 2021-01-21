@@ -6,8 +6,9 @@ from .arrangement import Arrangement
 
 
 class Song(db.Entity):
-    id = orm.Required(str, 64, unique=True)
-    index = orm.PrimaryKey(int, auto=True)
+    id = orm.PrimaryKey(str, 32)
+    # this is auto incremented by the DB
+    index = orm.Optional(int)
     name = orm.Required(str, 255)
     artist = orm.Required(str, 255)
     album = orm.Required(str, 255)
