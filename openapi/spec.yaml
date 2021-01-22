@@ -70,8 +70,8 @@ paths:
       description: Add the provided songs to the database
       operationId: songs.put
       responses:
-        '200':
-          description: OK
+        '204':
+          description: No Content
         '400':
           description: Bad request
         '401':
@@ -94,8 +94,6 @@ paths:
       responses:
         '204':
           description: No Content
-        '400':
-          description: Bad request
         '401':
           description: Unauthorised
       parameters:
@@ -136,7 +134,7 @@ paths:
       tags:
         - private
     parameters: []
-  /songs/{song}/interpretations:
+  '/songs/{song}/interpretations':
     get:
       summary: list all interpretations of a given song
       operationId: songs.interpretations.get
@@ -149,12 +147,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: integer
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Interpretation'
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date-time
+                        score:
+                          type: number
+                          format: float
+                      required:
+                        - date
+                        - score
+                        - '-date'
+                        - '-score'
         '416':
           description: Requested Range Not Satisfiable
         '422':
@@ -164,7 +172,6 @@ paths:
         - $ref: '#/components/parameters/padding'
         - name: orderby
           in: query
-          required: false
           schema:
             type: array
             default:
@@ -323,6 +330,7 @@ paths:
                 - combo
                 - bass
                 - alt
+          description: list of arrangement the reserched song should have
       tags:
         - public
       description: Search for a list of song based on various parameters
@@ -340,28 +348,35 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: integer
                   data:
                     type: object
                     properties:
                       song:
                         type: array
+                        maxItems: 5
+                        uniqueItems: true
                         items:
                           $ref: '#/components/schemas/SongSuggestion'
                       artist:
                         type: array
+                        maxItems: 5
+                        uniqueItems: true
                         items:
                           $ref: '#/components/schemas/ArtistSuggestion'
+                required:
+                  - data
         '422':
           description: Unprocessable entity
       parameters:
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/padding'
+        - $ref: '#/components/parameters/orderby'
         - name: search
           in: query
-          required: true
+          required: false
           schema:
             type: string
-          description: 'A string to performe exact search accross the `name`, `artist` and `album` fields.'
+          description: 'A string to performe fuzzy search accross the `name`, `artist` and `album` fields.'
         - name: lastInterpretation
           in: query
           schema:
@@ -410,7 +425,7 @@ paths:
               - 56.4
               - 65.23
           description: Range of scores to find the researched song in.
-        - name: showlight
+        - name: showlights
           in: query
           schema:
             type: boolean
@@ -438,6 +453,7 @@ paths:
                 - rhythm
                 - combo
                 - bass
+                - alt
       tags:
         - public
       description: 'Return search suggestions matchin the song title, album name or artist name provided.'
@@ -504,7 +520,7 @@ components:
           type: boolean
         update_date:
           type: integer
-          example: 17898797
+          example: 17898
         custom_class:
           type: string
           example: shinny
@@ -545,7 +561,7 @@ components:
           length: 158.5
           official: true
           showlight: true
-          update_date: 17898797897
+          update_date: 1789879
           custom_class: shinny
           arrangement:
             - name: Lead
@@ -672,24 +688,9 @@ components:
           example: 00cc00
           minLength: 3
           maxLength: 6
-    Interpretation:
-      type: object
-      properties:
-        song:
-          $ref: '#/components/schemas/id'
-        score:
-          type: number
-          minimum: 0
-          maximum: 100
-          example: 86.35
-          description: score in percent with two decimal places
-        time:
-          type: integer
-          format: int64
-          example: 17898797897
-          description: timestamp of the interpretation
     SongSuggestion:
       type: object
+      description: A song item as returned by the /search/suggestion endpoint
       properties:
         name:
           type: string
@@ -700,13 +701,18 @@ components:
         artist:
           type: string
           example: Mayhem
-      description: A song item as returned by the /search/suggestion endpoint
+      required:
+        - name
+        - album
+        - artist
     ArtistSuggestion:
       type: object
       properties:
         name:
           type: string
           example: Mayhem
+      required:
+        - name
   parameters:
     limit:
       in: query
@@ -729,7 +735,6 @@ components:
     orderby:
       in: query
       name: orderby
-      required: false
       schema:
         type: array
         default:
@@ -742,10 +747,10 @@ components:
             - album
             - artist
             - update_date
-            - -name
-            - -album
-            - -artist
-            - -update_date
+            - '-name'
+            - '-album'
+            - '-artist'
+            - '-update_date'
       description: |
         A coma separated list of field used by the order by method to sort the result set. **This parameter is incompatible with `seed`.**
       style: form
