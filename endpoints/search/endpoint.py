@@ -31,7 +31,12 @@ def get(limit, padding, orderby: list, search=None, lastInterpretation=None,
     # --- arrangement specific fields ---
     # does the song have certain arrangements
     if arrangements:
-        search_results = search_results.where(lambda s: orm.JOIN(arrangements[0] in s.arrangements.type))
+        filter_function = ''
+        for i in range(0, len(arrangements)):
+            filter_function += 'or arrangements[{}] in s.arrangements.type '.format(i)
+        filter_function = filter_function.split('or ', 1)[1]
+
+        search_results = search_results.where(filter_function)
 
     # --- interpretation specific fields ---
     # how many times does the song was played
