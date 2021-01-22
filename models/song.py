@@ -43,6 +43,18 @@ class Song(db.Entity):
             "arrangements": [a.serialize() for a in self.arrangements]
         }
 
+    def make_song_suggestion(self):
+        return {
+            'name': self.name,
+            'album': self.album,
+            'artist': self.artist
+        }
+
+    def make_artist_suggestion(self):
+        return {
+            'name': self.artist
+        }
+
     @staticmethod
     def add_entry(entry):
         # create the song object
