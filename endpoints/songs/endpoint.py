@@ -1,21 +1,17 @@
 from pony import orm
 from models import Song
-from random import shuffle
-from utils.db import get_random_indeces
+from random import shuffle, seed as set_seed
+from utils.db import format_order_by
 from pony.orm.core import TransactionIntegrityError
 
 
 def get(limit, padding, orderby, seed=None):
-    order_by = ''
-    for field in orderby:
-        order_by += 's.{field},'.format(field=field)
 
     if seed is None:
-        song_list = orm\
-            .select(s for s in Song)\
-            .order_by(order_by[:-1])\
+        song_list = orm \
+            .select(s for s in Song) \
+            .order_by(format_order_by(orderby)) \
             .limit(limit=limit, offset=padding)
-        indeces = []
     else:
         # shuffle all results
         id_list = list(orm.select(s.id for s in Song))
