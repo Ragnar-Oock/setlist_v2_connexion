@@ -57,38 +57,51 @@ class Song(db.Entity):
 
     @staticmethod
     def add_entry(entry):
-        # create the song object
-        new_song = Song(
-            id=entry.get('id'),
-            name=entry.get('name'),
-            artist=entry.get('artist'),
-            album=entry.get('album'),
-            vocals=entry.get('vocals'),
-            metadata=entry.get('metadata')
-        )
+        try:
+            metadata = entry.get('metadata')
+            for (key, value) in metadata:
+                metadata[key] = str(value)
 
-        # handle arrangements
-        if entry.get('arrangements'):
-            arrangement_list = []
-            # create all arrangements
-            for arrangement in entry['arrangements']:
-                new_arrangement = Arrangement(
-                    song=new_song,
-                    name=arrangement['name'],
-                    type=arrangement['type'],
-                    tuning=Tuning.add_entry(arrangement['tuning'])
-                )
-                if arrangement['capo']:
-                    new_arrangement.capo = arrangement['capo']
-                arrangement_list.append(new_arrangement)
-            # add all arrangements to the song
-            new_song.arrangements = arrangement_list
+            # create the song object
+            new_song = Song(
+                id=entry.get('id'),
+                name=entry.get('name'),
+                artist=entry.get('artist'),
+                album=entry.get('album'),
+                vocals=entry.get('vocals'),
+                length=entry.get('length'),
+                update_date=entry.get('update_date'),
+                showlights=entry.get('showlights'),
+                official=entry.get('official'),
+                custom_class=entry.get('custom_class'),
+                metadata=entry.get('metadata')
+            )
 
-        # handle tags
-        if entry.get('tags'):
-            tag_list = []
-            # get or create all tags
-            for tag in entry['tags']:
-                tag_list = Tag.add_entry(tag.get('name'), tag.get('color'))
-            # add all tags to the song
-            new_song.tags = tag_list
+            # handle arrangements
+            if entry.get('arrangements'):
+                arrangement_list = []
+                # create all arrangements
+                for arrangement in entry['arrangements']:
+                    new_arrangement = Arrangement(
+                        song=new_song,
+                        name=arrangement['name'],
+                        type=arrangement['type'],
+                        tuning=Tuning.add_entry(arrangement['tuning'])
+                    )
+                    if arrangement['capo']:
+                        new_arrangement.capo = arrangement['capo']
+                    arrangement_list.append(new_arrangement)
+                # add all arrangements to the song
+                new_song.arrangements = arrangement_list
+
+            # handle tags
+            if entry.get('tags'):
+                tag_list = []
+                # get or create all tags
+                for tag in entry['tags']:
+                    tag_list = Tag.add_entry(tag.get('name'), tag.get('color'))
+                # add all tags to the song
+                new_song.tags = tag_list
+
+        except Exception as e:
+            raise
