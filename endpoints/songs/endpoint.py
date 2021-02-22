@@ -1,4 +1,6 @@
 from pony import orm
+from pony.orm import IntegrityError
+
 from models import Song
 from random import shuffle, seed as set_seed
 from utils.db import format_order_by
@@ -26,16 +28,18 @@ def put(body):
     for song in body:
         try:
             Song.add_entry(song)
+        except IntegrityError as e:
+            orm.rollback()
+            return {"message": "song of id {} already exists, aborting insert".format(song.get('id'))}, 400
         except TransactionIntegrityError as e:
             orm.rollback()
-            print(e)
             return {"message": "song of id {} already exists, aborting insert".format(song.get('id'))}, 400
         except Exception as e:
             orm.rollback()
             print(e)
             return {"message": "failed to insert the song of id {}, unknown error".format(song.get('id'))}, 400
 
-    return {"message": "Sucssfully inserted {} songs".format(len(body))}, 200
+    return {"message": "Successfully inserted {} songs".format(len(body))}, 200
 
 
 def delete(ids):
