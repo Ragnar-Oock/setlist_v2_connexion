@@ -43,11 +43,12 @@ class Song(db.Entity):
             "arrangements": [a.serialize() for a in self.arrangements]
         }
 
-    def make_song_suggestion(self):
+    @staticmethod
+    def make_song_suggestion(song):
         return {
-            'name': self.name,
-            'album': self.album,
-            'artist': self.artist
+            'name': song[0],
+            'album': song[1],
+            'artist': song[2]
         }
 
     def make_artist_suggestion(self):
