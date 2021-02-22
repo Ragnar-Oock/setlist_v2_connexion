@@ -17,15 +17,11 @@ def get(limit, padding, orderby, seed=None):
             .limit(limit=limit, offset=padding)
         indeces = []
     else:
-        indeces = get_random_indeces(orm.count(s for s in Song), seed, limit, padding)
-
-        # get songs based on the random indeces
-        song_list = orm\
-            .select(s for s in Song)\
-            .where(lambda s: s.index in indeces)
-
-        # shuffle the list
-        shuffle(list(song_list))
+        # shuffle all results
+        id_list = list(orm.select(s.id for s in Song))
+        set_seed(a=seed, version=2)
+        shuffle(id_list)
+        song_list = orm.select(s for s in Song).where(lambda s: s.id in id_list[padding:padding + limit])
 
     return {'data': [s.serialize() for s in song_list]}, 200
 
