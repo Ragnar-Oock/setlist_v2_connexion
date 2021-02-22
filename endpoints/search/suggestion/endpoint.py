@@ -1,6 +1,6 @@
 from pony import orm
 from models import Song
-from utils.db import format_order_by
+from utils.db import format_order_by, format_similarity
 from datetime import timedelta, datetime
 from decimal import Decimal
 
@@ -12,7 +12,10 @@ def get(search, lastInterpretation=None,
     # song search
     # region
     # fuzzy search
-    song_results = orm.select(s for s in Song).where(orm.raw_sql('similarity("s"."fts_col", $search) > .1'))
+    song_results = orm\
+        .select((s.name, s.album, s.artist, orm.raw_sql('similarity("s"."fts_col", $search)')) for s in Song)\
+        .distinct()\
+        .where(format_similarity('fts_col', search))
 
     # does the song has showlights
     if showlights:
@@ -77,11 +80,11 @@ def get(search, lastInterpretation=None,
     # artists search
     artist_results = orm.select((s.artist, orm.raw_sql('similarity("s"."artist", $search)')) for s in Song) \
         .distinct() \
-        .where(orm.raw_sql('similarity("s"."artist", $search) > .1')) \
+        .where(format_similarity('artist', search)) \
         .order_by(format_order_by(['-similarity', 'artist'], similarity_col='artist')) \
         .limit(limit=5)
 
     return {'data': {
-        'song': [s.make_song_suggestion() for s in song_results],
+        'song': [Song.make_song_suggestion(s) for s in song_results],
         'artist': [{'name': a[0]} for a in artist_results]
     }}, 200

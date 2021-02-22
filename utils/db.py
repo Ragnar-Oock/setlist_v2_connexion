@@ -72,3 +72,15 @@ def format_order_by(orderby: str, alias='s', similarity_col='fts_col') -> str:
 
         order_by += pattern.format(field=field)
     return order_by[:-1]
+
+
+def format_similarity(field: str, search_string: str, table='s') -> raw_sql:
+    """
+    build a similarity where close
+    :param table: table of the field
+    :param field: field to perform the similarity search in
+    :param search_string: value to search in the database
+    """
+    return raw_sql('"{table}"."{field}" %% $search_string'
+                   .format(table=table, field=field)
+                   )
