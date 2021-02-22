@@ -3,18 +3,15 @@ from models import Song
 from utils.db import format_order_by, format_similarity
 from datetime import timedelta, datetime
 from decimal import Decimal
+import concurrent.futures
 
 
-def get(search, lastInterpretation=None,
-        interpretationNumber=None, score=None, showlights=None, vocals=None, odlc=None, arrangements=None):
-    orm.set_sql_debug(True)
-
-    # song search
-    # region
+def suggest_song(search, lastInterpretation=None,
+                 interpretationNumber=None, score=None, showlights=None, vocals=None, odlc=None, arrangements=None):
     # fuzzy search
-    song_results = orm\
-        .select((s.name, s.album, s.artist, orm.raw_sql('similarity("s"."fts_col", $search)')) for s in Song)\
-        .distinct()\
+    song_results = orm \
+        .select((s.name, s.album, s.artist, orm.raw_sql('similarity("s"."fts_col", $search)')) for s in Song) \
+        .distinct() \
         .where(format_similarity('fts_col', search))
 
     # does the song has showlights
@@ -72,19 +69,54 @@ def get(search, lastInterpretation=None,
         )
 
     # apply order by, limit and padding
-    song_results = song_results \
+    return song_results \
         .order_by(format_order_by(['-similarity', 'name', 'album', 'artist'])) \
         .limit(limit=5)
-    # endregion
 
-    # artists search
-    artist_results = orm.select((s.artist, orm.raw_sql('similarity("s"."artist", $search)')) for s in Song) \
+
+def suggest_artist(search):
+    return orm.select((s.artist, orm.raw_sql('similarity("s"."artist", $search)')) for s in Song) \
         .distinct() \
         .where(format_similarity('artist', search)) \
         .order_by(format_order_by(['-similarity', 'artist'], similarity_col='artist')) \
         .limit(limit=5)
 
+
+def get(search, lastInterpretation=None,
+        interpretationNumber=None, score=None, showlights=None, vocals=None, odlc=None, arrangements=None):
+    # orm.set_sql_debug(debug=True, show_values=True)
+
+    # threaded queries :
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        song_results = executor.submit(
+            suggest_song,
+            search,
+            lastInterpretation,
+            interpretationNumber,
+            score,
+            showlights,
+            vocals,
+            odlc,
+            arrangements
+        )
+        artist_results = executor.submit(
+            suggest_artist,
+            search
+        )
+        song_results = song_results.result()
+        artist_results = artist_results.result()
+    # unthreaded queries :
+    # song_results = suggest_song(search,
+    #                             lastInterpretation,
+    #                             interpretationNumber,
+    #                             score,
+    #                             showlights,
+    #                             vocals,
+    #                             odlc,
+    #                             arrangements)
+    # artist_results = suggest_artist(search)
+
     return {'data': {
         'song': [Song.make_song_suggestion(s) for s in song_results],
-        'artist': [{'name': a[0]} for a in artist_results]
+        'artist': [Song.make_artist_suggestion(a) for a in artist_results]
     }}, 200
