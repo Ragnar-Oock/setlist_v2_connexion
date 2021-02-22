@@ -7,7 +7,6 @@ from decimal import Decimal
 
 def get(limit, padding, orderby: list, search=None, lastInterpretation=None,
         interpretationNumber=None, score=None, showlights=None, vocals=None, odlc=None, arrangements=None):
-    orm.set_sql_debug(True)
     search_results = orm.select(s for s in Song)
 
     # fuzzy search
