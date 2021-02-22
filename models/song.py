@@ -51,9 +51,10 @@ class Song(db.Entity):
             'artist': song[2]
         }
 
-    def make_artist_suggestion(self):
+    @staticmethod
+    def make_artist_suggestion(artist):
         return {
-            'name': self.artist
+            'name': artist[0]
         }
 
     @staticmethod
