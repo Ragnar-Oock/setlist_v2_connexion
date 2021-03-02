@@ -1,5 +1,6 @@
 import connexion
 from dotenv import load_dotenv
+from flask_cors import CORS
 from pony.flask import Pony
 
 from custom_resolver.resolvers import FixedRestyResolver
@@ -16,5 +17,6 @@ app.add_api(
     resolver=FixedRestyResolver('endpoints')
 )
 # add pony wrapper on flask views
+CORS(app.app)
 Pony(app.app)
 app.run(port=8080, host='localhost')
