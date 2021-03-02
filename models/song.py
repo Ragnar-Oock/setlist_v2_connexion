@@ -61,8 +61,11 @@ class Song(db.Entity):
     def add_entry(entry):
         try:
             metadata = entry.get('metadata')
-            for (key, value) in metadata:
-                metadata[key] = str(value)
+            if metadata:
+                for (key, value) in metadata.items():
+                    metadata[key] = str(value)
+            else:
+                metadata = {}
 
             # create the song object
             new_song = Song(
@@ -76,7 +79,7 @@ class Song(db.Entity):
                 showlights=entry.get('showlights'),
                 official=entry.get('official'),
                 custom_class=entry.get('custom_class'),
-                metadata=entry.get('metadata')
+                metadata=metadata
             )
 
             # handle arrangements
