@@ -21,4 +21,6 @@ app.add_api(
 # add pony wrapper on flask views
 CORS(app.app)
 Pony(app.app)
-app.run(port=8080, host='localhost')
+
+if __name__ == "__main__":
+    app.run(port=8080, host='localhost')
