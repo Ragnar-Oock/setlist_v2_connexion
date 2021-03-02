@@ -4,5 +4,5 @@ db_params = {
     'password': 'password',
     'host': 'localhost',
     'port': 5432,
-    'database': 'tests'
+    'database': 'setlist_db'
 }
