@@ -6,7 +6,9 @@ from pony.flask import Pony
 from custom_resolver.resolvers import FixedRestyResolver
 from models.core import db
 
-load_dotenv()
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+load_dotenv(".env.local")
+load_dotenv(".env")
 
 db.generate_mapping(create_tables=True)
 
